@@ -1,19 +1,20 @@
 ---
 sudo: false
+language: perl6
+perl6:
+  - latest
+install:
+  - rakudobrew build zef
+  - zef install JSON::Fast
+  - zef install YAML::Parser::LibYAML
 before_script:
   - git clone https://github.com/exercism/problem-specifications.git
   - bin/fetch-configlet
-  - docker build -t exercism-rakudo-star .
-  - docker run
-    --volume $PWD:/exercism
-    exercism-rakudo-star perl6 -e
-    '.add(‘.meta/solutions’).dir.first({.extension eq ‘pm6’}).copy(.dir.first({.extension eq ‘pm6’}))
+  - perl6 -e '.add(‘.meta/solutions’).dir.first({.extension eq ‘pm6’}).copy(.dir.first({.extension eq ‘pm6’}))
     for $*CWD.add(‘exercism/exercises’).dir' # replace stub files with complete solutions from Example.pm6
 script:
   - bin/configlet lint .
-  - docker run
-    --volume $PWD:/exercism
-    exercism-rakudo-star prove /exercism
+  - prove
     --exec perl6
     --recurse
     --directives
